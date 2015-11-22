@@ -1,0 +1,86 @@
+C51 COMPILER V7.08   MAIN                                                                  11/08/2014 22:12:58 PAGE 1   
+
+
+C51 COMPILER V7.08, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          
+   2          #include "STC12C5A60S2.H"
+   3          //#include <reg52.h>
+   4          #include "12864.h"
+   5          #include <stdlib.h>
+   6          
+   7          uchar code num[]={
+   8          /*--  0  --*/
+   9          0x00,0x7C,0x82,0x82,0x82,0x7C,0x00,0x00,
+  10          /*--  1  --*/
+  11          0x00,0x00,0x04,0xFE,0x00,0x00,0x00,0x00,
+  12          /*--  2  --*/
+  13          0x00,0xC4,0xA2,0x92,0x8A,0x84,0x00,0x00,
+  14          /*--  3  --*/
+  15          0x00,0x44,0x82,0x92,0x92,0x6C,0x00,0x00
+  16          };
+  17          
+  18          
+  19          void delay(unsigned int i)
+  20          {
+  21   1              while (i--);
+  22   1      }
+  23          
+  24          
+  25          main()
+  26          {
+  27   1        int i;
+  28   1      
+  29   1      delay(60000);
+  30   1      
+  31   1        init12864();
+  32   1      
+  33   1        P1 = 0xFF;
+  34   1        while(1)
+  35   1        {
+  36   2          clear12864();
+  37   2          delay(10000);
+  38   2          //P1 ^= 1;
+  39   2        }
+  40   1      #if 0
+                for (i=0; i<128; i+=8)
+                {
+                  font8(i, 0, num);
+                  font8(i, 1, num+8);
+                  font8(i, 2, num+16);
+                  font8(i, 3, num+24);
+                  font8(i, 4, num);
+                  font8(i, 5, num+8);
+                  font8(i, 6, num+16);
+                  font8(i, 7, num+24);
+                }
+                
+                while(1)
+                {
+                  P1 = ~P1;
+C51 COMPILER V7.08   MAIN                                                                  11/08/2014 22:12:58 PAGE 2   
+
+                  delay(10000);
+                }             
+              #endif  
+  59   1      }
+*** WARNING C280 IN LINE 27 OF MAIN.C: 'i': unreferenced local variable
+*** WARNING C316 IN LINE 59 OF main.c: unterminated conditionals
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    121    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  0 ERROR(S)

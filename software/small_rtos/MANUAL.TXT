@@ -1,0 +1,271 @@
+                Small RTOS(51) v1.20.0 使用手册（简化版） 
+
+概述：
+    Small RTOS是一个源代码公开的多任务实时操作系统，Small RTOS 51
+是其在8051系列处理器上的移植（使用keil c51）。Small RTOS可以简化那
+些复杂而且时间要求严格的工程的软件设计工作.本手册主要讲述Small RTOS
+的使用，本说明了在8051系列处理器上使用应该注意的问题。同时讲述了
+Small RTOS的移植。
+    本手册仅针对Small RTOS(51) 1.20版本
+
+
+
+从v1.12.1升级到v1.20.0
+本节说明用户程序如果以前使用的是v1.12.1，如何改动用户程序以便使用v1.20.0版本
+1、os_cfg.h
+   1）删除宏EN_OS_INT_ENTER、EN_OS_Q_INT_POST、EN_OS_Q_INT_POST_FRONT、
+      和EN_OS_SEM_INT_POST的定义
+   2）适当改变宏EN_OS_SEM_POST、EN_OS_Q_POST和EN_OS_Q_POST_FRONT的定义
+   3）添加宏OSWait_EN的定义并将其定义为1
+   
+2、os_cpu.h（仅相对于51的移植）
+   以新的os_cpu.h的例子为蓝本，将老的的os_cpu.h中EN_SP2、
+   OS_INT_ENTER()、OS_ENTER_CRITICAL()、OS_EXIT_CRITICAL()、
+   IDATA_RAM_SIZE、Sp2Space、OS_TIME_ISR和SET_EA的设置复制到
+   新的os_cpu.h中
+     
+3、函数main()
+   1）在函数最开始的位置调用函数OSInit()
+   2）在程序
+“
+    OSStart();
+”    
+    前多次调用函数OSTaskCreate()建立所有任务，例：
+“
+    OSTaskCreate(TimeSum,    NULL,             3);
+                ^^^^^^^^     ^^^^              ^^
+                任务函数名   重入栈位置，为空   在数组TaskFuction的位置，即优先级
+”
+   3）用下列程序语句();
+“
+     while(1)
+     {
+         PCON = PCON | 0x01;                     /* CPU进入休眠状态 */
+     }
+”    
+     替换程序
+“    
+     OSStart();
+”     
+4、config.h
+   删除数组TaskFuction及相关定义
+   
+5、中断函数
+   删除
+“   
+   #if EN_OS_INT_ENTER >0
+”   
+   及对应的
+“   
+   #endif
+”   
+   但不删除这两句中间的内容。
+    
+6、禁止覆盖（仅相对于51的移植）
+   将?CO?OS_CPU_C该为main
+
+
+
+
+Small RTOS的特点：
+（1）公开源代码
+    只要遵循许可协议，任何人可以免费获得源代码。
+（2）可移植
+    作者尽量使用把与CPU相关部分压缩到最小，与CPU无关部分用ansi c编
+    写。
+（3）可固化
+    Small RTOS为嵌入系统设计，如果您有固化手段，它可以嵌入到您的产
+    品中成为产品的一部分。
+（4）占先式
+    Small RTOS可以管理17个任务，用户最多可以使用16个任务，每个任务
+    优先级不同。
+（5）中断管理
+    中断可以使正在执行的任务挂起。如果优先级更高的任务被中断唤醒，则
+    高优先级的任务在中断嵌套全部退出后立即执行。中断嵌套层数可达255
+    层。如果需要，可以禁止中断嵌套管理。
+（6）RAM需求小
+    Small RTOS为小RAM系统设计，应而RAM需求小，相应的，系统服务也少。
+
+
+
+
+Small RTOS的使用：
+（1）系统配置：
+    os_cfg.h中定义了一些常量可以配置系统，具体定义如下：
+
+    #define OS_MAX_TASKS            4           /* 最大任务数1~16，也就是实际任务数                         */
+    #define OS_TICKS_PER_SEC        10          /* 声明1秒系统系统节拍数                                    */
+    #define EN_USER_TICK_TIMER      0           /* 禁止(0)或允许(1)系统定时中断调用用户函数UserTickTimer()  */
+    #define EN_TIMER_SHARING        1           /* 禁止(0)或允许(1)定时器中断调用OSTimeTick()               */
+    #define TICK_TIMER_SHARING      1           /* 定义进入多少次硬件中断为一次系统定时器软中断             */
+    #define OSWait_EN               1           /* 禁止(0)或允许(1)调用兼容函数OSWait  */
+
+    #define EN_OS_Q                 0           /* 禁止(0)或允许(1)消息队列                                 */
+    #define EN_OS_Q_CHK             0           /* 禁止(0)或允许(1)校验消息队列指针                         */
+    #define OS_Q_MEM_SEL            xdata       /* 消息队列存储空间选择，keil c51有用，必须为idata、xdata   */
+                                                /* 不是keil c51时它必须为空格                               */
+    #define EN_OS_Q_PENT            1           /* 禁止(0)或允许(1)等待队列中的消息                         */
+    #define EN_OS_Q_ACCEPT          0           /* 禁止(0)或允许(1)无等待的从队列中取得消息                 */
+    #define EN_OS_Q_POST            0           /* 禁止(0)或允许(1)FIFO方式相对列发送消息                   */
+    #define EN_OS_Q_POST_FRONT      1           /* 禁止(0)或允许(1)LIFO方式相对列发送消息                   */
+    #define EN_OS_Q_INT_POST        0           /* 禁止(0)或允许(1)中断中FIFO方式相对列发送消息             */
+    #define EN_OS_Q_INT_POST_FRONT  1           /* 禁止(0)或允许(1)中断中LIFO方式相对列发送消息             */
+    #define EN_OS_Q_NMsgs           1           /* 禁止(0)或允许(1)取得队列中消息数                         */
+    #define EN_OS_Q_SIZE            0           /* 禁止(0)或允许(1)取得队列总容量                           */
+    #define EN_OS_Q_FLUSH           0           /* 禁止(0)或允许(1)清空队列                                 */
+
+    #define EN_OS_SEM               0           /* 禁止(0)或允许(1)信号量                                   */
+    #define EN_OS_SEM_CHK           0           /* 禁止(0)或允许(1)校验信号量索引                           */
+    #define OS_SEM_MEM_SEL          idata       /* 信号量储空间选择，keil c51有用，必须为idata、xdata       */
+                                                /* 不是keil c51时它必须为空格                               */
+    #define OS_MAX_SEMS             2           /* 最大信号量数目                                           */
+    #define EN_OS_SEM_PENT          1           /* 禁止(0)或允许(1)等待信号量                               */
+    #define EN_OS_SEM_ACCEPT        0           /* 禁止(0)或允许(1)无等待请求信号量                         */
+    #define EN_OS_SEM_INT_POST      0           /* 禁止(0)或允许(1)中断中发送信号量                         */
+    #define EN_OS_SEM_POST          1           /* 禁止(0)或允许(1)中发送信号量                             */
+    #define EN_OS_SEM_QUERY         0           /* 禁止(0)或允许(1)查询信号量                               */
+
+    #define EN_OS_MEM               0           /* 禁止(0)或允许(1)动态内存分配                             */
+    #define EN_OS_MEM_FREE          0           /* 禁止(0)或允许(1)释放动态分配的内存                        */
+    #define EN_OS_MEM_CHK           1           /* 禁止(0)或允许(1)内存回收时验证内存块是否有效               */
+    #define EN_UserMemChkErr        0           /* 禁止(0)或允许(1)内存回收验证出错调用用户函数UserMemChkErr   */
+
+    #if EN_TIMER_SHARING == 0
+    #define TIME_ISR_TASK_ID     SHOW_TASK_ID   /* 定义系统定时器软中断触发的任务ID                         */
+    #endif
+
+    Os_cpu.h中定义了一些常量可以配置一些与cpu相关的部分。
+    针对Small RTOS 51,具体定义如下：
+
+    #define  OS_ENTER_CRITICAL()  EA = 0,Os_Enter_Sum++             /* 关中断                                     */
+    #define  OS_EXIT_CRITICAL()   if (--Os_Enter_Sum==0) EA = 1     /* 开中断                                     */
+    /* 以上两句仅可以改变“EA = ? ”部分 */
+    
+    #define EN_SP2        0                     /* 禁止(0)或允许(1)非屏蔽中断                               */
+    #define  IDATA_RAM_SIZE  0x100              /* idata大小                                                */
+    #define  Sp2Space       4                   /* 高级中断（软非屏蔽中断）堆栈大小 EN_SP2为0时无效         */
+    #define OS_TIME_ISR     1                   /* 系统定时器使用的中断                                     */
+    //
+    SET_EA   MACRO                              ;打开所有允许中断
+             SETB     EA
+         ENDM
+
+（2）与编译器无关的数据类型
+    为了便于移植，Small RTOS定义了6种数据类型，它在Os_cpu.h定义。
+    针对Small RTOS 51,具体定义如下：
+    
+    typedef unsigned char  uint8;                                   /* 定义可移植的无符号8位整数关键字            */
+    typedef signed   char  int8;                                    /* 定义可移植的有符号8位整数关键字            */
+    typedef unsigned int   uint16;                                  /* 定义可移植的无符号16位整数关键字           */
+    typedef signed   int   int16;                                   /* 定义可移植的有符号16位整数关键字           */
+    typedef unsigned long  uint32;                                  /* 定义可移植的无符号32位整数关键字           */
+    typedef signed   long  int32;                                   /* 定义可移植的有符号32位整数关键字           */
+    
+（3）运行Small RTOS
+    在main函数中调用OSInit()后系统开始运行。OSInit();一般是main()函数
+    的第一句。main()函数将作为系统优先级最低的任务运行，它负责至少建立
+    一个用户任务。在最后它是一个是循环，一般是循环使CPU进入Idle状态。
+    注意：main函数不能有放弃CPU的企图。
+    
+（4）建立任务：
+     用户程序通过调用函数OSTaskCreate()建立任务。
+
+
+（5）删除任务
+     用户程序通过调用函数OSTaskDel()删除任务。
+
+
+（6）任务睡眠
+    任务可以调用OSTaskSuspend()使自己睡眠.
+    
+（7）信号量
+    在Small RTOS中，用一个0到（OS_MAX_SEMS-1）的值做索引标识一个信
+    号量，所有对信号量的访问都通过它访问。Small RTOS在使用一个信号量
+    之前，首先要初始化该信号量,也即调用OSSemCreate()函数，对信号量
+    的初始计数值赋值，该初始值为0到255之间的一个数。如果信号量是用来
+    表示一个或者多个事件的发生，那么该信号量的初始值应设为0。如果信号
+    量是用于对共享资源的访问，那么该信号的初始值应设为1（例如，把它当
+    作二值信号量使用）。最后，如果该信号量是用来表示允许任务访问n个
+    相同的资源，那么该初始值显示应该是 n，并把该信号量作为一个可计数
+    的信号量使用。
+    信号量使用的内存空间由用系统分配。
+    
+（8）消息队列
+    与一般的RTOS不同，Small RTOS的消息队列是以字节变量（uint8型变
+    量，范围为0到255）作为消息，而不是以指针指向的内容作为消息。也就
+    是说，消息队列发送一个消息实质是将一个0到255的数值存到消息队列中，
+    而不是将一个指针存到消息队列中。类似的，从消息队列中获得一个消息
+    就是得到一个范围为0到255的值。这个0到255的值用户可以任意解释。如
+    果用户确实需要多个字节作为一个整体传递，可以有两个方法：一是消息
+    队列仅仅传递数据的索引，真实数据放在另外的地方；一是一次向消息队
+    列中发送多个消息。
+    消息队列使用的内存空间由用户分配。
+
+（9）动态内存分配
+    使用与C语言的动态内存分配相似的方法分配和释放内存。注意：必须先
+    调用函数OSMemInit()初始化后才可以使用本模块。
+
+（10）Small RTOS 51 任务特殊处
+    由于keil c51由于keil c51默认不支持重入函数,它的重入函数使用
+    仿真的重入栈而不使用系统栈,而Small RTOS 51可选则是否对重入栈
+    进行管理，因此，用户应该保证各个任务的局部变量不会互相覆盖(方法
+    后面有介绍)，并且不定义重入函数。
+    
+（11）中断程序编制
+    keil c51 例子如下：
+    
+    #pragma disable                                        /* 除非最高优先级中断或是不需要系统管理的中断，否则，必须加上这一句  */
+        void OSTickISR(void) interrupt USER_ISR
+
+    {
+            OS_INT_ENTER();                                /* 中断开始处理                                                      */
+        
+        /*用户代码在这*/
+        
+        OSIntExit();                                       /* 中断结束处理，                                                    */
+    }
+
+        
+    在其它CPU中，#pragma disable不是必须的,但是可能需要自己在
+    OS_INT_ENTER()之前保存任务环境。如果某个中断不需要OS管理，
+    则可以自由编写。
+
+
+
+
+Small RTOS的系统调用：
+（1）OSVersion()
+    宏,返回Small RTOS版本号*100
+（2）OSRunningTaskID()
+    宏,返回当前正在运行的任务ID
+ 其它参考各个头文件。
+
+
+
+
+Small RTOS的移植：
+  给出两个移植实例，读者可以参考V1.12.1的使用手册和两个实例进行移植。
+        
+        
+            
+Small RTOS 51(for keil)的特殊说明：
+  参考V1.12.1版本的使用手册的这一部分。
+  唯一要注意的是这个版本可以选择是否管理了重入栈。
+  如果管理了重入栈，这以reentrant定义的函数可以被分配了重入栈空间的所
+  有任务调用，当然条件是它本身是可重入的。
+  
+
+
+
+      
+      
+  其它注意事项
+      1、通过调用系统函数进行任务切换，保存任务环境需要RAM空间为（2+到
+         OSSched时的调用层次*2）字节。通过中断进行任务切换保存任务环境
+         需要RAM空间为（中断发生时堆栈使用量+15）字节，这15字节包括
+         R0~R7,ACC,B,PSW,DPH,DPL和返回地址。而8051系列idata小（51只
+         有128字节，52只有256字节），因此，当任务较多时，应该避免过多
+         的通过中断进行任务切换。
+      2、OS_CPU.H 中的IDATA_RAM_SIZE应当与实际的idata相同。
+      3、系统栈还是用V1.12.1相同的方式管理，任务环境保存到系统栈中。
+      

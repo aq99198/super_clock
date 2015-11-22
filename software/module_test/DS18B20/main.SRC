@@ -1,0 +1,979 @@
+; .\main.SRC generated from: main.c
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND SRC(.\main.SRC)
+
+$NOMOD51
+
+NAME	MAIN
+
+P1M0	DATA	092H
+P0M1	DATA	093H
+P2M0	DATA	096H
+P1M1	DATA	091H
+P0	DATA	080H
+P3M0	DATA	0B2H
+P2M1	DATA	095H
+P1	DATA	090H
+P4M0	DATA	0B4H
+P3M1	DATA	0B1H
+P2	DATA	0A0H
+P5M0	DATA	0CAH
+P4M1	DATA	0B3H
+P3	DATA	0B0H
+P5M1	DATA	0C9H
+P4	DATA	0C0H
+AC	BIT	0D0H.6
+P5	DATA	0C8H
+EA	BIT	0A8H.7
+SPCTL	DATA	0CEH
+CF	BIT	0D8H.7
+CH	DATA	0F9H
+EADC	BIT	0A8H.5
+IE	DATA	0A8H
+CL	DATA	0E9H
+IAP_CMD	DATA	0C5H
+CCAP0H	DATA	0FAH
+CCAP1H	DATA	0FBH
+ADC_RES	DATA	0BDH
+IPH2	DATA	0B6H
+DQ	BIT	090H.1
+CCAP0L	DATA	0EAH
+CR	BIT	0D8H.6
+CCAP1L	DATA	0EBH
+CCAPM0	DATA	0DAH
+CCAPM1	DATA	0DBH
+ES	BIT	0A8H.4
+PADC	BIT	0B8H.5
+IP	DATA	0B8H
+RI	BIT	098H.0
+CY	BIT	0D0H.7
+TI	BIT	098H.1
+CLK_DIV	DATA	097H
+IAP_ADDRH	DATA	0C3H
+PS	BIT	0B8H.4
+SP	DATA	081H
+IAP_ADDRL	DATA	0C4H
+CMOD	DATA	0D9H
+CCON	DATA	0D8H
+PPCA	BIT	0B8H.7
+OV	BIT	0D0H.2
+ELVD	BIT	0A8H.6
+P4SW	DATA	0BBH
+ADC_CONTR	DATA	0BCH
+SBUF	DATA	099H
+PCON	DATA	087H
+SCON	DATA	098H
+WAKE_CLKO	DATA	08FH
+TMOD	DATA	089H
+TCON	DATA	088H
+PLVD	BIT	0B8H.6
+IE0	BIT	088H.1
+BUS_SPEED	DATA	0A1H
+IE1	BIT	088H.3
+IE2	DATA	0AFH
+AUXR	DATA	08EH
+B	DATA	0F0H
+IAP_CONTR	DATA	0C7H
+ACC	DATA	0E0H
+ET0	BIT	0A8H.1
+TF0	BIT	088H.5
+ET1	BIT	0A8H.3
+TF1	BIT	088H.7
+IP2	DATA	0B5H
+RB8	BIT	098H.2
+TH0	DATA	08CH
+TH1	DATA	08DH
+IT0	BIT	088H.0
+EX0	BIT	0A8H.0
+TB8	BIT	098H.3
+IT1	BIT	088H.2
+EX1	BIT	0A8H.2
+P	BIT	0D0H.0
+SM0	BIT	098H.7
+TL0	DATA	08AH
+SM1	BIT	098H.6
+TL1	DATA	08BH
+SM2	BIT	098H.5
+PT0	BIT	0B8H.1
+PT1	BIT	0B8H.3
+RS0	BIT	0D0H.3
+IAP_DATA	DATA	0C2H
+TR0	BIT	088H.4
+RS1	BIT	0D0H.4
+TR1	BIT	088H.6
+WDT_CONTR	DATA	0C1H
+PX0	BIT	0B8H.0
+PX1	BIT	0B8H.2
+PCA_PWM0	DATA	0F2H
+PCA_PWM1	DATA	0F3H
+P1ASF	DATA	09DH
+DPH	DATA	083H
+ADC_RESL	DATA	0BEH
+DPL	DATA	082H
+SPSTAT	DATA	0CDH
+IPH	DATA	0B7H
+S2BUF	DATA	09BH
+REN	BIT	098H.4
+S2CON	DATA	09AH
+BRT	DATA	09CH
+SADEN	DATA	0B9H
+SADDR	DATA	0A9H
+IAP_TRIG	DATA	0C6H
+AUXR1	DATA	0A2H
+F0	BIT	0D0H.5
+PSW	DATA	0D0H
+CCF0	BIT	0D8H.0
+SPDAT	DATA	0CFH
+CCF1	BIT	0D8H.1
+P0M0	DATA	094H
+?PR?_udelay?MAIN     SEGMENT CODE 
+?PR?_mdelay?MAIN     SEGMENT CODE 
+?DT?_mdelay?MAIN     SEGMENT DATA OVERLAYABLE 
+?PR?ds1302_init?MAIN SEGMENT CODE 
+?PR?ds1302_reset?MAIN                    SEGMENT CODE 
+?BI?ds1302_reset?MAIN                    SEGMENT BIT OVERLAYABLE 
+?PR?_ds1302_write_byte?MAIN              SEGMENT CODE 
+?DT?_ds1302_write_byte?MAIN              SEGMENT DATA OVERLAYABLE 
+?PR?ds1302_read_byte?MAIN                SEGMENT CODE 
+?DT?ds1302_read_byte?MAIN                SEGMENT DATA OVERLAYABLE 
+?PR?ds1302_start?MAIN                    SEGMENT CODE 
+?PR?ds1302_read_temp?MAIN                SEGMENT CODE 
+?DT?ds1302_read_temp?MAIN                SEGMENT DATA OVERLAYABLE 
+?PR?uart_init?MAIN   SEGMENT CODE 
+?PR?_UART_Send_Byte?MAIN                 SEGMENT CODE 
+?PR?_UART_Send_Dat?MAIN                  SEGMENT CODE 
+?PR?main?MAIN        SEGMENT CODE 
+	EXTRN	CODE (?C?IMUL)
+	EXTRN	CODE (?C_STARTUP)
+	PUBLIC	main
+	PUBLIC	_UART_Send_Dat
+	PUBLIC	_UART_Send_Byte
+	PUBLIC	uart_init
+	PUBLIC	_mdelay
+	PUBLIC	_udelay
+
+	RSEG  ?DT?_ds1302_write_byte?MAIN
+?_ds1302_write_byte?BYTE:
+        val?444:   DS   1
+
+	RSEG  ?BI?ds1302_reset?MAIN
+?ds1302_reset?BIT:
+       flag?343:   DBIT   1
+
+	RSEG  ?DT?ds1302_read_byte?MAIN
+?ds1302_read_byte?BYTE:
+      value?547:   DS   1
+
+	RSEG  ?DT?ds1302_read_temp?MAIN
+?ds1302_read_temp?BYTE:
+  temp_data?748:   DS   2
+
+	RSEG  ?DT?_mdelay?MAIN
+?_mdelay?BYTE:
+         ms?142:   DS   2
+; /*
+;  * DS18B20 
+; */
+; 
+; #include "STC12C5A60S2.H"
+; #include <intrins.h> 
+; 
+; #define SYS_CLK 22118400UL
+; #define STC_1T
+; 
+; typedef unsigned char uint8;
+; typedef unsigned int uint16;
+; typedef char int8;
+; typedef int int16;
+; typedef bit bool;
+; 
+; #define DQ_BIT	1
+; sbit DQ  = P1^1;
+; 
+; #define SET_P1_INPUT(b)	do { \
+; 	P1M0 &= ~(1<<(b)); \
+; 	P1M1 |= 1<<(b); \
+; } while (0)
+; 
+; #define SET_P1_OUTPUT(b)	do { \
+; 	P1M0 &= ~(1<<(b)); \
+; 	P1M1 &= ~(1<<(b)); \
+; } while (0)
+; 
+; 
+; #if 1
+; void udelay(uint16 us)
+
+	RSEG  ?PR?_udelay?MAIN
+L?0059:
+	USING	0
+	CLR  	DQ
+L?0060:
+	MOV  	R7,#04H
+	MOV  	R6,#00H
+_udelay:
+	USING	0
+			; SOURCE LINE # 32
+;---- Variable 'us?040' assigned to Register 'R2/R3' ----
+	MOV  	R3,AR7
+	MOV  	R2,AR6
+; {
+			; SOURCE LINE # 33
+; #if SYS_CLK == 11059200UL
+; 	uint16 tmp;
+; 
+; 	us >>= 4;
+; 	tmp = us;
+; 	// us * 11059200 / 12000000 = us * 11 / 12 = us - us / 12 = us - (us * 21) >> 8
+; 	us *= 21;
+; 	us >>= 8;
+; 	us = tmp - us;
+; #elif SYS_CLK == 12000000UL
+; 	us >>= 4;
+; #elif SYS_CLK == 22118400UL
+; 	uint16 tmp;
+; 	
+; 	us >>= 4;
+			; SOURCE LINE # 48
+	MOV  	A,R2
+	SWAP 	A
+	MOV  	R0,A
+	ANL  	A,#0F0H
+	XCH  	A,R0
+	XRL  	A,R0
+	MOV  	R2,A
+	MOV  	A,R3
+	SWAP 	A
+	ANL  	A,#0FH
+	ORL  	A,R0
+; 	tmp = us;
+			; SOURCE LINE # 49
+;---- Variable 'tmp?041' assigned to Register 'DPTR' ----
+	MOV  	DPL,A
+	MOV  	DPH,R2
+; 	// us * 22118400 / 12000000 = us * 11 / 6 = 2 * us - us / 6 = 2 * us - (us * 43) >> 8
+; 	us *= 43;
+			; SOURCE LINE # 51
+	MOV  	R4,#00H
+	MOV  	R5,#02BH
+	MOV  	R7,A
+	MOV  	R6,AR2
+	LCALL	?C?IMUL
+	MOV  	R2,AR6
+; 	us >>= 8;
+			; SOURCE LINE # 52
+	MOV  	A,R2
+	MOV  	R3,A
+	MOV  	R2,#00H
+; 	us = (tmp << 2) - us;
+			; SOURCE LINE # 53
+	MOV  	A,DPL
+	MOV  	R6,DPH
+	MOV  	R0,#02H
+?C0055:
+	CLR  	C
+	RLC  	A
+	XCH  	A,R6
+	RLC  	A
+	XCH  	A,R6
+	DJNZ 	R0,?C0055
+	CLR  	C
+	SUBB 	A,R3
+	MOV  	R3,A
+	MOV  	A,R6
+	SUBB 	A,R2
+; #else
+; 	us = SYS_CLK * us / 12000000
+; #endif
+; 
+; #ifdef STC_1T
+; 	us *= 12;
+			; SOURCE LINE # 59
+	MOV  	R4,#00H
+	MOV  	R5,#0CH
+	MOV  	R7,AR3
+	MOV  	R6,A
+	LCALL	?C?IMUL
+; #pragma asm
+; 		// 16 machine cycle = 16 clock cycle
+	  
+; 		INC		R6
+	  INC		R6
+; 		CJNE	R7,	#0,	LOOP	// 4
+	  CJNE	R7,	#0,	LOOP	 
+; 		AJMP	LOOP1
+	  AJMP	LOOP1
+; LOOP:	NOP						// 1
+	  LOOP:	NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		NOP						// 1
+	  NOP						 
+; 		DJNZ	R7, LOOP		// 4
+	  DJNZ	R7, LOOP		 
+; LOOP1:	DJNZ	R6, LOOP		// 4
+	  LOOP1:	DJNZ	R6, LOOP		 
+; #pragma endasm
+; 
+; #else
+; 
+; #pragma asm
+; 		// 16 machine cycle = 16 * 12 clock cycle
+; 		INC		R6
+; 		CJNE	R7,	#0,	LOOP	// 2
+; 		AJMP	LOOP1
+; LOOP:	NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		NOP						// 1
+; 		DJNZ	R7, LOOP		// 2
+; LOOP1:	DJNZ	R6, LOOP		// 2
+; #pragma endasm
+; #endif
+; }
+			; SOURCE LINE # 106
+	RET  	
+; END OF _udelay
+
+; #else
+; void udelay(uint16 us)
+; {
+; 	int n = 12;
+; 
+; 	while(us--)
+; 	{
+; 		while(n--);		
+; 	}
+; }
+; #endif
+; 
+; 
+; void mdelay(uint16 ms)
+
+	RSEG  ?PR?_mdelay?MAIN
+_mdelay:
+	USING	0
+			; SOURCE LINE # 120
+	MOV  	ms?142,R6
+	MOV  	ms?142+01H,R7
+; {
+			; SOURCE LINE # 121
+?C0002:
+; 	while (ms--)
+			; SOURCE LINE # 122
+	MOV  	A,ms?142+01H
+	DEC  	ms?142+01H
+	MOV  	R6,ms?142
+	JNZ  	?C0056
+	DEC  	ms?142
+?C0056:
+	ORL  	A,R6
+	JZ   	?C0004
+; 	{
+			; SOURCE LINE # 123
+; 		udelay(1000);
+			; SOURCE LINE # 124
+	MOV  	R7,#0E8H
+	MOV  	R6,#03H
+	LCALL	_udelay
+; 	}
+			; SOURCE LINE # 125
+	SJMP 	?C0002
+; }
+			; SOURCE LINE # 126
+?C0004:
+	RET  	
+; END OF _mdelay
+
+; 
+; 
+; static void ds1302_init(void)
+
+	RSEG  ?PR?ds1302_init?MAIN
+ds1302_init:
+			; SOURCE LINE # 129
+; {
+			; SOURCE LINE # 130
+; 	//io input
+; 	SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 132
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+; 	DQ = 1;
+			; SOURCE LINE # 133
+	SETB 	DQ
+; }
+			; SOURCE LINE # 134
+	RET  	
+; END OF ds1302_init
+
+; 
+; static void ds1302_reset(void)
+
+	RSEG  ?PR?ds1302_reset?MAIN
+ds1302_reset:
+	USING	0
+			; SOURCE LINE # 136
+; {
+			; SOURCE LINE # 137
+; 	bool flag = 1;
+			; SOURCE LINE # 138
+	SETB 	flag?343
+?C0009:
+; 
+; 	while (flag)
+			; SOURCE LINE # 140
+	JNB  	flag?343,?C0021
+; 	{
+			; SOURCE LINE # 141
+?C0011:
+; 		while (flag)
+			; SOURCE LINE # 142
+	JNB  	flag?343,?C0012
+; 	 	{
+			; SOURCE LINE # 143
+; 			SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 144
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+;  			DQ = 1;
+			; SOURCE LINE # 145
+	SETB 	DQ
+; 			udelay(16);
+			; SOURCE LINE # 146
+	MOV  	R7,#010H
+	MOV  	R6,#00H
+	LCALL	_udelay
+;  			DQ = 0;
+			; SOURCE LINE # 147
+	CLR  	DQ
+;  			udelay(550); // 550us
+			; SOURCE LINE # 148
+	MOV  	R7,#026H
+	MOV  	R6,#02H
+	LCALL	_udelay
+;  			DQ = 1; 
+			; SOURCE LINE # 149
+	SETB 	DQ
+;  			udelay(66);  // 66us
+			; SOURCE LINE # 150
+	MOV  	R7,#042H
+	MOV  	R6,#00H
+	LCALL	_udelay
+;  			SET_P1_INPUT(DQ_BIT);
+			; SOURCE LINE # 151
+	ANL  	P1M0,#0FDH
+	ORL  	P1M1,#02H
+; 			flag = DQ;
+			; SOURCE LINE # 152
+	MOV  	C,DQ
+	MOV  	flag?343,C
+;    		}
+			; SOURCE LINE # 153
+	SJMP 	?C0011
+?C0012:
+; 		udelay(500);    // 500us
+			; SOURCE LINE # 154
+	MOV  	R7,#0F4H
+	MOV  	R6,#01H
+	LCALL	_udelay
+; 		flag = ~DQ;
+			; SOURCE LINE # 155
+	MOV  	C,DQ
+	CPL  	C
+	MOV  	flag?343,C
+; 	}
+			; SOURCE LINE # 156
+	SJMP 	?C0009
+?C0021:
+; 	SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 157
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+; 	DQ=1;
+			; SOURCE LINE # 158
+	SETB 	DQ
+; }
+			; SOURCE LINE # 159
+	RET  	
+; END OF ds1302_reset
+
+; 
+; static void ds1302_write_byte(uint8 val)
+
+	RSEG  ?PR?_ds1302_write_byte?MAIN
+_ds1302_write_byte:
+	USING	0
+			; SOURCE LINE # 161
+	MOV  	val?444,R7
+; {
+			; SOURCE LINE # 162
+; 	uint8 i;
+; 
+; 	SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 165
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+; 	for (i=0; i<8; i++)
+			; SOURCE LINE # 166
+;---- Variable 'i?445' assigned to Register 'R1' ----
+	CLR  	A
+	MOV  	R1,A
+?C0026:
+; 	{
+			; SOURCE LINE # 167
+; 		DQ = 1;
+			; SOURCE LINE # 168
+	SETB 	DQ
+; 		udelay(1);
+			; SOURCE LINE # 169
+	MOV  	R7,#01H
+	MOV  	R6,#00H
+	LCALL	_udelay
+; 		DQ = 0;
+			; SOURCE LINE # 170
+; 		udelay(4); //4us
+			; SOURCE LINE # 171
+	LCALL	L?0059
+; 		DQ = val & 0x01; 
+			; SOURCE LINE # 172
+	MOV  	A,val?444
+	RRC  	A
+	MOV  	DQ,C
+; 		udelay(66); //66us
+			; SOURCE LINE # 173
+	MOV  	R7,#042H
+	MOV  	R6,#00H
+	LCALL	_udelay
+; 		val >>= 1;
+			; SOURCE LINE # 174
+	MOV  	A,val?444
+	CLR  	C
+	RRC  	A
+	MOV  	val?444,A
+; 	}
+			; SOURCE LINE # 175
+	INC  	R1
+	CJNE 	R1,#08H,?C0026
+?C0027:
+; 	DQ = 1;
+			; SOURCE LINE # 176
+	SETB 	DQ
+; 	udelay(10);  
+			; SOURCE LINE # 177
+	MOV  	R7,#0AH
+	MOV  	R6,#00H
+	LJMP 	_udelay
+; END OF _ds1302_write_byte
+
+; }
+; 
+; static uint8 ds1302_read_byte(void)
+
+	RSEG  ?PR?ds1302_read_byte?MAIN
+ds1302_read_byte:
+	USING	0
+			; SOURCE LINE # 180
+; {
+			; SOURCE LINE # 181
+; 	uint8 i, value=0;
+			; SOURCE LINE # 182
+	CLR  	A
+	MOV  	value?547,A
+; 
+; 	for (i=0; i<8; i++)
+			; SOURCE LINE # 184
+;---- Variable 'i?546' assigned to Register 'R1' ----
+	MOV  	R1,A
+?C0030:
+; 	{
+			; SOURCE LINE # 185
+; 		SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 186
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+; 		DQ=1;
+			; SOURCE LINE # 187
+	SETB 	DQ
+; 		udelay(1);
+			; SOURCE LINE # 188
+	MOV  	R7,#01H
+	MOV  	R6,#00H
+	LCALL	_udelay
+; 		value >>= 1;
+			; SOURCE LINE # 189
+	MOV  	A,value?547
+	CLR  	C
+	RRC  	A
+	MOV  	value?547,A
+; 		DQ = 0;
+			; SOURCE LINE # 190
+; 		udelay(4);   //4us
+			; SOURCE LINE # 191
+	LCALL	L?0059
+; 		DQ = 1;
+			; SOURCE LINE # 192
+	SETB 	DQ
+; 		udelay(4);   //4us 
+			; SOURCE LINE # 193
+	LCALL	L?0060
+; 		SET_P1_INPUT(DQ_BIT);
+			; SOURCE LINE # 194
+	ANL  	P1M0,#0FDH
+	ORL  	P1M1,#02H
+; 		if (DQ)
+			; SOURCE LINE # 195
+	JNB  	DQ,?C0039
+; 			value|=0x80;
+			; SOURCE LINE # 196
+	ORL  	value?547,#080H
+?C0039:
+; 		udelay(66);  //66us
+			; SOURCE LINE # 197
+	MOV  	R7,#042H
+	MOV  	R6,#00H
+	LCALL	_udelay
+; 	}
+			; SOURCE LINE # 198
+	INC  	R1
+	CJNE 	R1,#08H,?C0030
+?C0042:
+; 	SET_P1_OUTPUT(DQ_BIT);
+			; SOURCE LINE # 199
+	ANL  	P1M0,#0FDH
+	ANL  	P1M1,#0FDH
+; 	DQ=1;
+			; SOURCE LINE # 200
+	SETB 	DQ
+; 
+; 	return value;
+			; SOURCE LINE # 202
+	MOV  	R7,value?547
+; }
+			; SOURCE LINE # 203
+?C0043:
+	RET  	
+; END OF ds1302_read_byte
+
+; 
+; static void ds1302_start(void)
+
+	RSEG  ?PR?ds1302_start?MAIN
+ds1302_start:
+	USING	0
+			; SOURCE LINE # 205
+; {
+			; SOURCE LINE # 206
+; 	ds1302_reset();
+			; SOURCE LINE # 207
+	LCALL	ds1302_reset
+; 	ds1302_write_byte(0xCC); // Skip ROM cmd
+			; SOURCE LINE # 208
+	MOV  	R7,#0CCH
+	LCALL	_ds1302_write_byte
+; 	ds1302_write_byte(0x44); // convert cmd
+			; SOURCE LINE # 209
+	MOV  	R7,#044H
+	LJMP 	_ds1302_write_byte
+; END OF ds1302_start
+
+; }
+; 
+; static int16 ds1302_read_temp(void)
+
+	RSEG  ?PR?ds1302_read_temp?MAIN
+ds1302_read_temp:
+	USING	0
+			; SOURCE LINE # 212
+; {
+			; SOURCE LINE # 213
+; 	uint8 temp_data[2]; // 读出温度暂放
+; 	int16 temp;
+; 
+; 	ds1302_reset();
+			; SOURCE LINE # 217
+	LCALL	ds1302_reset
+; 	ds1302_write_byte(0xCC); // Skip ROM cmd
+			; SOURCE LINE # 218
+	MOV  	R7,#0CCH
+	LCALL	_ds1302_write_byte
+; 	ds1302_write_byte(0xBE); // read
+			; SOURCE LINE # 219
+	MOV  	R7,#0BEH
+	LCALL	_ds1302_write_byte
+; 	temp_data[0] = ds1302_read_byte();  // low 8 bits
+			; SOURCE LINE # 220
+	LCALL	ds1302_read_byte
+	MOV  	temp_data?748,R7
+; 	temp_data[1] = ds1302_read_byte();  // high 8 bits
+			; SOURCE LINE # 221
+	LCALL	ds1302_read_byte
+	MOV  	temp_data?748+01H,R7
+; 
+; 	temp = temp_data[1];
+			; SOURCE LINE # 223
+;---- Variable 'temp?749' assigned to Register 'R6/R7' ----
+; 	temp <<= 8;
+			; SOURCE LINE # 224
+	MOV  	A,R7
+	MOV  	R6,A
+; 	temp |= temp_data[0];
+			; SOURCE LINE # 225
+	MOV  	A,temp_data?748
+	MOV  	R7,A
+; 	temp >>= 4;
+			; SOURCE LINE # 226
+	MOV  	A,R7
+	MOV  	R0,#04H
+?C0057:
+	XCH  	A,R6
+	MOV  	C,ACC.7
+	RRC  	A
+	XCH  	A,R6
+	RRC  	A
+	DJNZ 	R0,?C0057
+	MOV  	R7,A
+; 
+; 	return temp;
+			; SOURCE LINE # 228
+; }
+			; SOURCE LINE # 229
+?C0045:
+	RET  	
+; END OF ds1302_read_temp
+
+; 
+; 
+; /**
+;  * UART初始化
+;  * 波特率：9600
+; */
+; void uart_init(void)
+
+	RSEG  ?PR?uart_init?MAIN
+uart_init:
+			; SOURCE LINE # 236
+; {
+			; SOURCE LINE # 237
+;     TMOD = 0x21;        // 定时器1工作在方式2（自动重装）
+			; SOURCE LINE # 238
+	MOV  	TMOD,#021H
+;     SCON = 0x50;        // 10位uart，允许串行接受
+			; SOURCE LINE # 239
+	MOV  	SCON,#050H
+; 
+;     TH1 = 0xFD;
+			; SOURCE LINE # 241
+	MOV  	TH1,#0FDH
+;     TL1 = 0xFD;
+			; SOURCE LINE # 242
+	MOV  	TL1,#0FDH
+; 
+;     TR1 = 1;
+			; SOURCE LINE # 244
+	SETB 	TR1
+; }
+			; SOURCE LINE # 245
+	RET  	
+; END OF uart_init
+
+; 
+; /**
+;  * UART发送一字节
+; */
+; void UART_Send_Byte(uint8 dat)
+
+	RSEG  ?PR?_UART_Send_Byte?MAIN
+_UART_Send_Byte:
+			; SOURCE LINE # 250
+;---- Variable 'dat?950' assigned to Register 'R7' ----
+; {
+			; SOURCE LINE # 251
+; 	SBUF = dat;
+			; SOURCE LINE # 252
+	MOV  	SBUF,R7
+?C0047:
+; 	while (TI == 0);
+			; SOURCE LINE # 253
+	JNB  	TI,?C0047
+?C0048:
+; 	TI = 0;
+			; SOURCE LINE # 254
+	CLR  	TI
+; }
+			; SOURCE LINE # 255
+	RET  	
+; END OF _UART_Send_Byte
+
+; 
+; /**
+;  * 将数据转换成ASC码并通过UART发送出去
+; */
+; void UART_Send_Dat(uint8 dat)
+
+	RSEG  ?PR?_UART_Send_Dat?MAIN
+L?0058:
+	USING	0
+	MOV  	R7,#01H
+	LCALL	_UART_Send_Dat
+	MOV  	R7,#01H
+_UART_Send_Dat:
+	USING	0
+			; SOURCE LINE # 260
+;---- Variable 'dat?1051' assigned to Register 'R6' ----
+	MOV  	R6,AR7
+; {
+			; SOURCE LINE # 261
+; 	UART_Send_Byte(dat/10 + '0');
+			; SOURCE LINE # 262
+	MOV  	A,R6
+	MOV  	B,#0AH
+	DIV  	AB
+	ADD  	A,#030H
+	MOV  	R7,A
+	LCALL	_UART_Send_Byte
+; 	UART_Send_Byte(dat%10 + '0');
+			; SOURCE LINE # 263
+	MOV  	A,R6
+	MOV  	B,#0AH
+	DIV  	AB
+	MOV  	A,B
+	ADD  	A,#030H
+	MOV  	R7,A
+	LJMP 	_UART_Send_Byte
+; END OF _UART_Send_Dat
+
+; }
+; 
+; 
+; main()
+
+	RSEG  ?PR?main?MAIN
+main:
+	USING	0
+			; SOURCE LINE # 267
+; {
+			; SOURCE LINE # 268
+; 	int16 ans;
+; 
+; 	uart_init();
+			; SOURCE LINE # 271
+	LCALL	uart_init
+?C0051:
+; 	
+; 	while (1)
+			; SOURCE LINE # 273
+; 	{
+			; SOURCE LINE # 274
+; 		UART_Send_Dat(1);
+			; SOURCE LINE # 275
+; 		UART_Send_Dat(1);
+			; SOURCE LINE # 276
+	LCALL	L?0058
+; 		UART_Send_Dat(1);
+			; SOURCE LINE # 277
+; 		UART_Send_Dat(1);
+			; SOURCE LINE # 278
+	LCALL	L?0058
+; 		UART_Send_Dat(1);
+			; SOURCE LINE # 279
+	MOV  	R7,#01H
+	LCALL	_UART_Send_Dat
+; 		
+; 		ds1302_start();
+			; SOURCE LINE # 281
+	LCALL	ds1302_start
+; 		UART_Send_Dat(2);
+			; SOURCE LINE # 282
+	MOV  	R7,#02H
+	LCALL	_UART_Send_Dat
+; 
+; 		mdelay(1000); // 延时1秒
+			; SOURCE LINE # 284
+	MOV  	R7,#0E8H
+	MOV  	R6,#03H
+	LCALL	_mdelay
+; 		UART_Send_Dat(3);
+			; SOURCE LINE # 285
+	MOV  	R7,#03H
+	LCALL	_UART_Send_Dat
+; 
+; 		ans=ds1302_read_temp();
+			; SOURCE LINE # 287
+	LCALL	ds1302_read_temp
+;---- Variable 'ans?1152' assigned to Register 'R4/R5' ----
+	MOV  	R5,AR7
+	MOV  	R4,AR6
+; 	
+; 		if (ans < 0)
+			; SOURCE LINE # 289
+	CLR  	C
+	MOV  	A,R4
+	XRL  	A,#080H
+	SUBB 	A,#080H
+	JNC  	?C0053
+; 		{
+			; SOURCE LINE # 290
+; 			UART_Send_Byte('-');
+			; SOURCE LINE # 291
+	MOV  	R7,#02DH
+	LCALL	_UART_Send_Byte
+; 			ans = -ans;
+			; SOURCE LINE # 292
+	CLR  	C
+	CLR  	A
+	SUBB 	A,R5
+	MOV  	R5,A
+	CLR  	A
+	SUBB 	A,R4
+	MOV  	R4,A
+; 		}
+			; SOURCE LINE # 293
+?C0053:
+; 	
+; 		UART_Send_Dat(ans);
+			; SOURCE LINE # 295
+	MOV  	R7,AR5
+	LCALL	_UART_Send_Dat
+; 		UART_Send_Byte('\r');
+			; SOURCE LINE # 296
+	MOV  	R7,#0DH
+	LCALL	_UART_Send_Byte
+; 		UART_Send_Byte('\n');
+			; SOURCE LINE # 297
+	MOV  	R7,#0AH
+	LCALL	_UART_Send_Byte
+; 	}
+			; SOURCE LINE # 298
+	SJMP 	?C0051
+; END OF main
+
+	END

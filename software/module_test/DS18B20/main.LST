@@ -1,0 +1,287 @@
+C51 COMPILER V7.08   MAIN                                                                  11/23/2014 20:17:52 PAGE 1   
+
+
+C51 COMPILER V7.08, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2           * DS18B20 
+   3          */
+   4          
+   5          #include "STC12C5A60S2.H"
+   6          #include <intrins.h> 
+   7          
+   8          #define SYS_CLK 22118400UL
+   9          #define STC_1T
+  10          
+  11          typedef unsigned char uint8;
+  12          typedef unsigned int uint16;
+  13          typedef char int8;
+  14          typedef int int16;
+  15          typedef bit bool;
+  16          
+  17          #define DQ_BIT  1
+  18          sbit DQ  = P1^1;
+  19          
+  20          #define SET_P1_INPUT(b) do { \
+  21                  P1M0 &= ~(1<<(b)); \
+  22                  P1M1 |= 1<<(b); \
+  23          } while (0)
+  24          
+  25          #define SET_P1_OUTPUT(b)        do { \
+  26                  P1M0 &= ~(1<<(b)); \
+  27                  P1M1 &= ~(1<<(b)); \
+  28          } while (0)
+  29          
+  30          
+  31          void UART_Send_Dat(uint8 dat);
+  32          
+  33          uint8 timer_init(void)
+  34          {
+  35   1              uint16 timer_val = 0;
+  36   1      
+  37   1              TMOD &= ~0x0F;
+  38   1              TMOD |= 0x01;
+  39   1              TL0 = timer_val & 0xFF;
+  40   1              TH0 = (timer_val >> 8) & 0xFF;
+  41   1              TR0 = 1;
+  42   1              
+  43   1              return 0;
+  44   1      }
+  45          
+  46          uint16 read_T0_val(void)
+  47          {
+  48   1              uint8 th0 = TH0;
+  49   1              uint8 tl0 = TL0;
+  50   1      
+  51   1              while (th0 != TH0)
+  52   1              {
+  53   2                      th0 = TH0;
+  54   2                      tl0 = TL0;
+  55   2              }
+C51 COMPILER V7.08   MAIN                                                                  11/23/2014 20:17:52 PAGE 2   
+
+  56   1      
+  57   1              return (uint16)th0 << 8 | tl0;
+  58   1      }
+  59          
+  60          void udelay(uint16 us)
+  61          {
+  62   1          uint16 cur = 0, stop = 0;
+  63   1      #if SYS_CLK == 22118400UL
+  64   1              uint16 cnt = us << 1;
+  65   1      #else
+                      uint16 cnt = us;
+              #endif
+  68   1              
+  69   1          cur = read_T0_val();
+  70   1          stop = cur + cnt;
+  71   1          
+  72   1          while (stop < cur)
+  73   1          {
+  74   2              cur = read_T0_val();
+  75   2          }
+  76   1          while (stop > cur)
+  77   1          {
+  78   2              cur = read_T0_val();
+  79   2          }
+  80   1      }
+  81          
+  82          void mdelay(uint16 ms)
+  83          {
+  84   1              while (ms--)
+  85   1              {
+  86   2                      udelay(1000);
+  87   2              }
+  88   1      }
+  89          
+  90          static void ds1302_init(void)
+  91          {
+  92   1              //io input
+  93   1              SET_P1_OUTPUT(DQ_BIT);
+  94   1              DQ = 1;
+  95   1      }
+  96          
+  97          static void ds1302_reset(void)
+  98          {
+  99   1              bool flag = 1;
+ 100   1      
+ 101   1              while (flag)
+ 102   1              {
+ 103   2                      while (flag)
+ 104   2                      {
+ 105   3                              SET_P1_OUTPUT(DQ_BIT);
+ 106   3                              DQ = 1;
+ 107   3                              udelay(16);
+ 108   3                              DQ = 0;
+ 109   3                              udelay(550); // 550us
+ 110   3                              DQ = 1; 
+ 111   3                              SET_P1_INPUT(DQ_BIT);
+ 112   3                              udelay(66);  // 66us
+ 113   3                              flag = DQ;
+ 114   3                      }
+ 115   2                      udelay(500);    // 500us
+ 116   2                      flag = ~DQ;
+ 117   2              }
+C51 COMPILER V7.08   MAIN                                                                  11/23/2014 20:17:52 PAGE 3   
+
+ 118   1              SET_P1_OUTPUT(DQ_BIT);
+ 119   1              DQ=1;
+ 120   1      }
+ 121          
+ 122          static void ds1302_write_byte(uint8 val)
+ 123          {
+ 124   1              uint8 i;
+ 125   1      
+ 126   1              SET_P1_OUTPUT(DQ_BIT);
+ 127   1              for (i=0; i<8; i++)
+ 128   1              {
+ 129   2                      DQ = 1;
+ 130   2                      udelay(1);
+ 131   2                      DQ = 0;
+ 132   2                      udelay(4); //4us
+ 133   2                      DQ = val & 0x01; 
+ 134   2                      udelay(66); //66us
+ 135   2                      val >>= 1;
+ 136   2              }
+ 137   1              DQ = 1;
+ 138   1              udelay(10);  
+ 139   1      }
+ 140          
+ 141          static uint8 ds1302_read_byte(void)
+ 142          {
+ 143   1              uint8 i, value=0;
+ 144   1      
+ 145   1              for (i=0; i<8; i++)
+ 146   1              {
+ 147   2                      SET_P1_OUTPUT(DQ_BIT);
+ 148   2                      DQ=1;
+ 149   2                      udelay(1);
+ 150   2                      value >>= 1;
+ 151   2                      DQ = 0;
+ 152   2                      udelay(4);   //4us
+ 153   2                      DQ = 1;
+ 154   2                      SET_P1_INPUT(DQ_BIT);
+ 155   2                      udelay(4);   //4us 
+ 156   2                      if (DQ)
+ 157   2                              value |= 0x80;
+ 158   2                      udelay(66);  //66us
+ 159   2              }
+ 160   1              SET_P1_OUTPUT(DQ_BIT);
+ 161   1              DQ=1;
+ 162   1      
+ 163   1              return value;
+ 164   1      }
+ 165          
+ 166          static void ds1302_start(void)
+ 167          {
+ 168   1              ds1302_reset();
+ 169   1              ds1302_write_byte(0xCC); // Skip ROM cmd
+ 170   1              ds1302_write_byte(0x44); // convert cmd
+ 171   1      }
+ 172          
+ 173          static int16 ds1302_read_temp(void)
+ 174          {
+ 175   1              uint8 temp_data[2]; // 读出温度暂放
+ 176   1              int16 temp;
+ 177   1      
+ 178   1              ds1302_reset();
+ 179   1              ds1302_write_byte(0xCC); // Skip ROM cmd
+C51 COMPILER V7.08   MAIN                                                                  11/23/2014 20:17:52 PAGE 4   
+
+ 180   1              ds1302_write_byte(0xBE); // read
+ 181   1              temp_data[0] = ds1302_read_byte();  // low 8 bits
+ 182   1              temp_data[1] = ds1302_read_byte();  // high 8 bits
+ 183   1      
+ 184   1              temp = temp_data[1];
+ 185   1              temp <<= 8;
+ 186   1              temp |= temp_data[0];
+ 187   1              temp >>= 4;
+ 188   1      
+ 189   1              return temp;
+ 190   1      }
+ 191          
+ 192          
+ 193          /**
+ 194           * UART初始化
+ 195           * 波特率：9600
+ 196          */
+ 197          void uart_init(void)
+ 198          {
+ 199   1          TMOD = 0x21;        // 定时器1工作在方式2（自动重装）
+ 200   1          SCON = 0x50;        // 10位uart，允许串行接受
+ 201   1      
+ 202   1          TH1 = 0xFD;
+ 203   1          TL1 = 0xFD;
+ 204   1      
+ 205   1          TR1 = 1;
+ 206   1      }
+ 207          
+ 208          /**
+ 209           * UART发送一字节
+ 210          */
+ 211          void UART_Send_Byte(uint8 dat)
+ 212          {
+ 213   1              SBUF = dat;
+ 214   1              while (TI == 0);
+ 215   1              TI = 0;
+ 216   1      }
+ 217          
+ 218          /**
+ 219           * 将数据转换成ASC码并通过UART发送出去
+ 220          */
+ 221          void UART_Send_Dat(uint8 dat)
+ 222          {
+ 223   1              UART_Send_Byte(dat/10 + '0');
+ 224   1              UART_Send_Byte(dat%10 + '0');
+ 225   1      }
+ 226          
+ 227          
+ 228          main()
+ 229          {
+ 230   1              int16 ans;
+ 231   1              
+ 232   1              timer_init();
+ 233   1              uart_init();
+ 234   1              ds1302_init();
+ 235   1              
+ 236   1              while (1)
+ 237   1              {
+ 238   2                      ds1302_start();
+ 239   2      
+ 240   2                      mdelay(1000); // 延时1秒
+ 241   2      
+C51 COMPILER V7.08   MAIN                                                                  11/23/2014 20:17:52 PAGE 5   
+
+ 242   2                      ans=ds1302_read_temp();
+ 243   2              
+ 244   2                      if (ans < 0)
+ 245   2                      {
+ 246   3                              UART_Send_Byte('-');
+ 247   3                              ans = -ans;
+ 248   3                      }
+ 249   2              
+ 250   2                      UART_Send_Dat(ans);
+ 251   2                      UART_Send_Byte('\r');
+ 252   2                      UART_Send_Byte('\n');
+ 253   2              }
+ 254   1      
+ 255   1      }
+ 256          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    495    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

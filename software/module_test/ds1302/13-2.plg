@@ -1,0 +1,62 @@
+<html>
+<body>
+<pre>
+<h1>µVision2 Build Log</h1>
+<h2>Project:</h2>
+E:\program\super_clock\software\module_test\ds1302\13-2.uv2
+Project File Date:  12/31/2010
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+MAIN.C(117): warning C206: 'ds1302_clear_wp': missing function-prototype
+MAIN.C(119): warning C206: 'ds1302_reset': missing function-prototype
+MAIN.C(121): warning C206: 'ds1302_write_byte': missing function-prototype
+MAIN.C(121): error C267: 'ds1302_write_byte': requires ANSI-style prototype
+Target not created
+Build target 'Target 1'
+compiling main.c...
+MAIN.C(117): warning C206: 'ds1302_clear_wp': missing function-prototype
+MAIN.C(119): warning C206: 'ds1302_reset': missing function-prototype
+MAIN.C(121): warning C206: 'ds1302_write_byte': missing function-prototype
+MAIN.C(121): error C267: 'ds1302_write_byte': requires ANSI-style prototype
+Target not created
+Build target 'Target 1'
+compiling main.c...
+MAIN.C(124): warning C206: 'hex2bcd': missing function-prototype
+MAIN.C(124): error C267: 'hex2bcd': requires ANSI-style prototype
+Target not created
+Build target 'Target 1'
+compiling main.c...
+MAIN.C(131): warning C206: 'ds1302_set_wp': missing function-prototype
+MAIN.C(113): warning C280: 'timedata': unreferenced local variable
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SET_TIME?MAIN
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  DS1302_SET_WP
+    MODULE:  main.obj (MAIN)
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  DS1302_SET_WP
+    MODULE:  main.obj (MAIN)
+    ADDRESS: 01F5H
+Program Size: data=22.0 xdata=0 code=679
+creating hex file from "13-2"...
+"13-2" - 0 Error(s), 5 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+MAIN.C(113): warning C280: 'timedata': unreferenced local variable
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SET_TIME?MAIN
+Program Size: data=22.0 xdata=0 code=679
+creating hex file from "13-2"...
+"13-2" - 0 Error(s), 2 Warning(s).
+Build target 'Target 1'
+compiling main.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SET_TIME?MAIN
+Program Size: data=22.0 xdata=0 code=688
+creating hex file from "13-2"...
+"13-2" - 0 Error(s), 1 Warning(s).
